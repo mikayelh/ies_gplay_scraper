@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.common.exceptions import ElementNotVisibleException, NoSuchElementException, WebDriverException
 from bs4 import BeautifulSoup
 import re
-
+#todo rewrite docstrings, possibly add type assertions, add comments to xpaths
 class app_reviews:
     """
     Class definition of the webdriver used for reviews scrapping.

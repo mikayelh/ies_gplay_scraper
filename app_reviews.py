@@ -195,11 +195,3 @@ class app_reviews:
                 'support' : self.collect_support()
             })
         )
-
-# EXAMPLE RUN - too short to be usefull
-whatsap = app_reviews(
-    webdriver.Chrome('chromedriver.exe'),
-    "https://play.google.com/store/apps/details?id=com.whatsapp&showAllReviews=true"
-    )
-whatsap.run_it(max_iter = 10, rate = 0.8)
-result = whatsap.collect_data()

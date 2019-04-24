@@ -157,7 +157,7 @@ class app_reviews:
             list containing how was the app rated by user
         """
         rating = self.driver.find_elements_by_xpath(
-            '//span[@class="nt2C1d"]/div[@class="pf5lIe"]/div[contains(@aria-label,"Hodnocení")]'
+            '//span[@class="nt2C1d"]/div[@class="pf5lIe"]/div[contains(@aria-label,"Hodnocení"|"Rated")]'
             )
         rat_int = [
             re.findall('\d+', r.get_attribute('aria-label'))[0]

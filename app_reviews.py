@@ -16,6 +16,8 @@ class app_reviews:
         a webdriver to be used
     second : str
         URL of the app
+    lang : str
+        driver locale, expected to be either 'cs' or 'en'
 
     Attributes
     ----------
@@ -25,8 +27,10 @@ class app_reviews:
         latest position achieved using `move_it` method
     driver : selenium.webdriver.<driver>.webdriver.WebDriver
         exposing the webdriver used for scrapping
+    source : bs4.BeautifulSoup
+        exposing the BeautifulSoup parsed webpage source
     """
-    def __init__(self, driver, url):
+    def __init__(self, driver, url, lang = 'en'):
         """
         Starting own webdriver, initialize the scrapping of a new application
         """
@@ -34,6 +38,11 @@ class app_reviews:
         self.position = 0
         self.driver = driver
         self.driver.get(url)
+        self.source = -1
+        if lang in ['en', 'cs']:
+            self.lang = lang
+        else:
+            raise ValueError("The lang is expected to be either 'cs' or 'en'")
     #
     def move_to(self, pos):
         """
@@ -81,6 +90,21 @@ class app_reviews:
             except (ElementNotVisibleException, WebDriverException):
                 pass
     #
+    def get_source(self):
+        """
+        Parse and save the webpage source
+        """
+        self.source = -1
+        self.source = BeautifulSoup(self.driver.page_source, features="lxml)
+        return
+    #
+    def val_source(self):
+        """
+        Validate the page was parsed and saved.
+        """
+        if self.source == -1:
+            raise ValueError('The page was not parsed. Make sure you run `get_source()` method first.')
+    #
     def run_it(self, max_iter = 1000, rate = 1):
         """
         Start the process of loading the reviews
@@ -99,6 +123,7 @@ class app_reviews:
             i += 1
             time.sleep(rate)
         self.unwrap_reviews()
+        self.get_source()
     #
     def extract_short(self):
         """
@@ -110,7 +135,8 @@ class app_reviews:
             list containing short reviews
             - position is empty ('') for unwrapped reviews
         """
-        reviews_div = self.driver.find_elements_by_xpath('//span[@jsname="bN97Pc"]')
+        self.val_source()
+        reviews_div = self.source.select('span[jsname="bN97Pc"]')
         reviews_txt = [i.text for i in reviews_div]
         return(reviews_txt)
     #
@@ -124,7 +150,8 @@ class app_reviews:
             list containing long reviews
             - position is empty ('') for short reviews
         """
-        unwrapped_div = self.driver.find_elements_by_xpath('//span[@jsname="fbQN7e"]')
+        self.val_source()
+        unwrapped_div = self.source.select('span[jsname="fbQN7e"]')
         unwrapped_txt = [i.text for i in unwrapped_div]
         return(unwrapped_txt)
     #
@@ -157,11 +184,13 @@ class app_reviews:
         list
             list containing how was the app rated by user
         """
-        rating = self.driver.find_elements_by_xpath(
-            '//span[@class="nt2C1d"]/div[@class="pf5lIe"]/div[contains(@aria-label,"Hodnocení"|"Rated")]'
-            )
+        self.val_source()
+        if self.lang == 'cs':
+            rating = self.source.select('span.nt2C1d > div.pf5lIe > div[aria-label*=Hodnocení]')
+        else:
+            rating = self.source.select('span.nt2C1d > div.pf5lIe > div[aria-label*=Rated]')
         rat_int = [
-            re.findall('\d+', r.get_attribute('aria-label'))[0]
+            re.findall('\d+', r.get('aria-label'))[0]
                 for r in rating
         ]
         return(rat_int)
@@ -175,9 +204,8 @@ class app_reviews:
         list
             list containing how was the review rated by other users
         """
-        support = self.driver.find_elements_by_xpath(
-            '//div[@class = "jUL89d y92BAb"]'
-            )
+        self.val_source()
+        support = self.source.select('div[class="jUL89d y92BAb"]')
         return([s.text for s in support])
     #
     def collect_data(self):

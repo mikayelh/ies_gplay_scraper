@@ -14,7 +14,7 @@ class app_reviews:
     ----------
     driver : selenium.webdriver.<driver>.webdriver.WebDriver
         a webdriver to be used
-    second : str
+    url : str
         URL of the app
     lang : str
         driver locale, expected to be either 'cs' or 'en'
@@ -95,7 +95,7 @@ class app_reviews:
         Parse and save the webpage source
         """
         self.source = -1
-        self.source = BeautifulSoup(self.driver.page_source, features="lxml)
+        self.source = BeautifulSoup(self.driver.page_source, features = "lxml")
         return
     #
     def val_source(self):

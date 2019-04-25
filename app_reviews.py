@@ -48,7 +48,8 @@ class app_reviews:
     #
     def move_it(self, pos = -1, offset = 10000):
         """
-        Scroll further down, loading more reviews (via button click) if possible
+        Scroll further down, loading more reviews (via button click) if possible.
+        Can be used for incremental scrolling.
 
         Parameters
         ----------

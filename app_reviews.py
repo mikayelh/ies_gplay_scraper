@@ -29,6 +29,8 @@ class app_reviews:
         exposing the webdriver used for scrapping
     source : bs4.BeautifulSoup
         exposing the BeautifulSoup parsed webpage source
+    delta: list of int
+        scroll positions from last 5 moves
     """
     def __init__(self, driver, url, lang = 'en'):
         """
@@ -39,6 +41,7 @@ class app_reviews:
         self.driver = driver
         self.driver.get(url)
         self.source = -1
+        self.reset_delta()
         if lang in ['en', 'cs']:
             self.lang = lang
         else:
@@ -100,10 +103,25 @@ class app_reviews:
     #
     def val_source(self):
         """
-        Validate the page was parsed and saved.
+        Validate the page was parsed and saved
         """
         if self.source == -1:
             raise ValueError('The page was not parsed. Make sure you run `get_source()` method first.')
+    #
+    def reset_delta(self):
+        """
+        Reset iteration movement tracking
+        """
+        self.delta = list(reversed(range(5)))
+    #
+    def val_movement(self):
+        """
+        Validate the scrolling is working
+        """
+        self.delta.insert(0, self.position)
+        self.delta.pop()
+        if min(self.delta) == max(self.delta):
+            raise RuntimeError('The scrolling process seems to have stopped moving.')
     #
     def run_it(self, max_iter = 1000, rate = 1):
         """
@@ -120,6 +138,7 @@ class app_reviews:
         i = 0
         while i < max_iter:
             self.move_it()
+            self.val_movement()
             i += 1
             time.sleep(rate)
         self.unwrap_reviews()

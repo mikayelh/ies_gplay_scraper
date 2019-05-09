@@ -34,7 +34,7 @@ class app_reviews:
         scroll positions from last 5 moves
     """
 
-    def __init__(self, driver: webdriver, url: str, lang: str = 'en') -> None:
+    def __init__(self, driver, url: str, lang: str = 'en') -> None:
         """
         Starting own webdriver, initialize the scrapping of a new application
         """

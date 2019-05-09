@@ -1,3 +1,4 @@
+from typing import List
 import numpy as np
 import pandas as pd
 import time
@@ -26,7 +27,7 @@ class app_reviews:
     driver : selenium.webdriver.<driver>.webdriver.WebDriver
         exposing the webdriver used for scrapping
     """
-    def __init__(self, driver, url):
+    def __init__(self, driver: webdriver, url: str) -> None:
         """
         Starting own webdriver, initialize the scrapping of a new application
         """
@@ -35,7 +36,7 @@ class app_reviews:
         self.driver = driver
         self.driver.get(url)
     #
-    def move_to(self, pos):
+    def move_to(self, pos: int) -> None:
         """
         Move driver to a position defined by Y axis pixels
 
@@ -46,7 +47,7 @@ class app_reviews:
         """
         self.driver.execute_script("window.scrollTo(0, {to})".format(to = pos))
     #
-    def move_it(self, pos = -1, offset = 10000):
+    def move_it(self, pos: int = -1, offset: int = 10000) -> None:
         """
         Scroll further down, loading more reviews (via button click) if possible.
         Can be used for incremental scrolling.
@@ -68,7 +69,7 @@ class app_reviews:
             self.move_to(pos + offset)
         self.position = self.driver.execute_script("return window.pageYOffset;")
     #
-    def unwrap_reviews(self):
+    def unwrap_reviews(self) -> None:
         """
         Unwrap all shortened reviews
         Walks through the loaded reviews and clicks every 'Show full review' button
@@ -81,7 +82,7 @@ class app_reviews:
             except (ElementNotVisibleException, WebDriverException):
                 pass
     #
-    def run_it(self, max_iter = 1000, rate = 1):
+    def run_it(self, max_iter: int = 1000, rate: float = 1) -> None:
         """
         Start the process of loading the reviews
 
@@ -89,7 +90,7 @@ class app_reviews:
         ----------
         max_iter : int
             a number defining how many times will be method `move_it` used
-        rate : int
+        rate : float
             waiting time between subsequent calls to method `move_it`
             - should be large enough for the webdriver to load new content
         """
@@ -100,7 +101,7 @@ class app_reviews:
             time.sleep(rate)
         self.unwrap_reviews()
     #
-    def extract_short(self):
+    def extract_short(self) -> List[str]:
         """
         Extract the short reviews
 
@@ -114,7 +115,7 @@ class app_reviews:
         reviews_txt = [i.text for i in reviews_div]
         return(reviews_txt)
     #
-    def extract_long(self):
+    def extract_long(self) -> List[str]:
         """
         Extract the long (wrapped) reviews
 
@@ -128,16 +129,14 @@ class app_reviews:
         unwrapped_txt = [i.text for i in unwrapped_div]
         return(unwrapped_txt)
     #
-    def collect_reviews(self):
+    def collect_reviews(self) -> List[str] or List[List[str]]:
         """
-        Collect all reviews. Tries to match short and long reviews into a pandas.DataFrame
+        Collect all reviews. Tries to match short and long reviews into a single list
 
         Returns
         -------
-        pandas.core.frame.DataFrame
-            if reviews were matched perfectly
         list
-            otherwise
+            list of matched reviews, or list of lists of reviews
         """
         short = self.extract_short()
         long = self.extract_long()
@@ -148,7 +147,7 @@ class app_reviews:
             reviews = [short, long]
         return(reviews)
     #
-    def collect_rating(self):
+    def collect_rating(self) -> List[str]:
         """
         Colect user ratings of the app
 
@@ -166,7 +165,7 @@ class app_reviews:
         ]
         return(rat_int)
     #
-    def collect_support(self):
+    def collect_support(self) -> List[str]:
         """
         Collect the support of the review
 
@@ -180,7 +179,7 @@ class app_reviews:
             )
         return([s.text for s in support])
     #
-    def collect_data(self):
+    def collect_data(self) -> pd.DataFrame:
         """
         Collect all data into a pandas.DataFrame
 

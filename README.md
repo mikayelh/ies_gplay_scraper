@@ -10,5 +10,5 @@ The **planned** modules follow:
 - **process_reviews.py**
     - scrapping process definition
 - **sentiment.py**
-    - sentiment analysis
+    - sentiment analysis and data visualization
  

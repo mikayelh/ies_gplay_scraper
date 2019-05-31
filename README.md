@@ -7,7 +7,7 @@ The code was developed as a final project for Data Processing in Python (JEM207)
 The **planned** modules follow:
 - **app_reviews.py**
     - class definition of the object responsible for scrapping and data collection
-- **debug.py** and **multi-process.py*
+- **debug.py** and **multi-process.py**
     - scrapping process definition
 - **EDA.ipynb**
     - EDA and data visualization
